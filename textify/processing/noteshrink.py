@@ -502,39 +502,8 @@ their samples together into one large array.
 
 ######################################################################
 
-def emit_pdf(outputs, options):
-    '''Runs the PDF conversion command to generate the PDF.'''
-
-    cmd = options.pdf_cmd
-    cmd = cmd.replace('%o', options.pdfname)
-    if len(outputs) > 2:
-        cmd_print = cmd.replace('%i', ' '.join(outputs[:2] + ['...']))
-    else:
-        cmd_print = cmd.replace('%i', ' '.join(outputs))
-    cmd = cmd.replace('%i', ' '.join(outputs))
-
-    if not options.quiet:
-        print('running PDF command "{}"...'.format(cmd_print))
-
-    try:
-        result = subprocess.call(shlex.split(cmd))
-    except OSError:
-        result = -1
-
-    if result == 0:
-        if not options.quiet:
-            print('  wrote', options.pdfname)
-    else:
-        sys.stderr.write('warning: PDF command failed\n')
-
-
-######################################################################
-
-def notescan_main(options):
+def notescan_main(options, save_folder):
     '''Main function for this program when run as script.'''
-
-    print(options)
-    print(type(options))
 
     filenames = get_filenames(options)
 
@@ -553,10 +522,7 @@ def notescan_main(options):
         if img is None:
             continue
 
-        import os
-
-        SAVE_FOLDER = os.path.dirname(os.path.abspath(__file__)) + "/out/"
-        output_filename = SAVE_FOLDER + '{}{:04d}.png'.format(
+        output_filename = save_folder + '/{}{:04d}.png'.format(
             options.basename, len(outputs))
 
         if not options.quiet:
@@ -581,8 +547,6 @@ def notescan_main(options):
 
         if not options.quiet:
             print('  done\n')
-
-    emit_pdf(outputs, options)
 
 
 ######################################################################
