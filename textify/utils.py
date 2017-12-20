@@ -10,6 +10,7 @@ import urllib.request
 
 import numpy as np
 from skimage import exposure, img_as_float, img_as_ubyte
+from skimage.restoration import denoise_wavelet
 import img2pdf
 import cv2
 
@@ -241,9 +242,9 @@ def prepare_for_scanning(images, chat_id):
     for image in images:
         img = cv2.imread(image)
         img_adapt = img_as_float(img)
-
         hist_eql = exposure.equalize_adapthist(img_adapt, clip_limit=0.03)
-        img = img_as_ubyte(hist_eql)
+
+        img = img_as_ubyte(denoise_wavelet(hist_eql, multichannel=True))
         filename = str(path) + "/{}".format(image.split('/')[-1])
         cv2.imwrite(filename, img)
 
